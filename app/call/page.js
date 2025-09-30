@@ -34,7 +34,7 @@ function CallComponent() {
 
   const handleEndCall = () => {
     endCall();
-    router.push('/');
+    router.back();
   };
 
   return (
