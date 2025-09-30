@@ -510,12 +510,13 @@ export const useWebRTC = (roomId, userId, userName, callType) => {
         }
 
         // Add own stream to peers state
-        setPeers([{
-          socketId: socketRef.current.id,
-          stream,
-          isAudioEnabled: true,
-          isVideoEnabled: callType === 'video'
-        }]);
+        // setPeers([{
+        //   socketId: socketRef.current.id,
+        //   stream,
+        //   isAudioEnabled: true,
+        //   isVideoEnabled: callType === 'video'
+        // }]);
+        setPeers([]); // Only remote peers go in peers
         console.log('[WebRTC] Local stream set and added to peers:', socketRef.current.id);
 
         // Join room
