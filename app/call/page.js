@@ -3,6 +3,7 @@
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Suspense, useRef, useEffect } from 'react';
 import { useWebRTC } from '@/hooks/useWebRTC';
+import roomService from '@/lib/appwrite';
 
 function CallComponent() {
   const searchParams = useSearchParams();
@@ -36,6 +37,15 @@ function CallComponent() {
     endCall();
     router.back();
   };
+  const addUser = async () => {
+    // Save to Appwrite before joining room
+    const meetingUrl = ` ${process.env.NEXT_PUBLIC_HOST}/call?roomId=${roomId}&callType=${callType}`;
+    await roomService.saveRoomEntry(meetingUrl, roomId, userId, receiverIds);
+  }
+  useEffect(() => {
+    addUser();
+  }, [roomId])
+
 
   return (
     <div className="min-h-screen bg-gray-900 p-4">
