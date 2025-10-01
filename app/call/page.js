@@ -11,8 +11,8 @@ function CallComponent() {
   
   const callType = searchParams.get('callType') || 'audio';
   const receiverIds = searchParams.getAll('receiverId');
-  const roomId = searchParams.get('roomId') || `room-${Date.now()}`;
-  const userId = searchParams.get('userId') || `user-${Math.random().toString(36).substr(2, 9)}`;
+  const roomId = searchParams.get('roomId') || null;
+  const userId = searchParams.get('userId') || null;
   const userName = searchParams.get('userName') || 'Anonymous';
 
   const {
