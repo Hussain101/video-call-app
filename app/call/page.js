@@ -43,8 +43,10 @@ function CallComponent() {
     await roomService.saveRoomEntry(meetingUrl, roomId, userId, receiverIds);
   }
   useEffect(() => {
+    if (userId) {
     addUser();
-  }, [roomId])
+    }
+  }, [userId])
 
 
   return (
