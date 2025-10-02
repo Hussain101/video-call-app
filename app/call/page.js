@@ -40,7 +40,7 @@ function CallComponent() {
   const addUser = async () => {
     // Save to Appwrite before joining room
     const meetingUrl = ` ${process.env.NEXT_PUBLIC_HOST}/call?roomId=${roomId}&callType=${callType}`;
-    await roomService.saveRoomEntry(meetingUrl, roomId, userId, receiverIds);
+    await roomService.saveRoomEntry(meetingUrl, roomId, userId, receiverIds, userName);
   }
   useEffect(() => {
     if (userId) {
@@ -156,6 +156,14 @@ function RemoteVideo({ peer, index, callType }) {
           <div className="w-24 h-24 rounded-full bg-green-500 flex items-center justify-center text-white text-3xl font-bold">
             {index + 1}
           </div>
+          {/* Add audio element for audio calls */}
+          {callType === 'audio' && (
+            <audio
+              ref={videoRef}
+              autoPlay
+              controls={false}
+            />
+          )}
         </div>
       )}
       <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 px-2 py-1 rounded text-white text-sm">
