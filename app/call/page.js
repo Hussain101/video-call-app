@@ -134,11 +134,11 @@ function CallComponent() {
 }
 
 function RemoteVideo({ peer, index, callType }) {
-  const videoRef = useRef();
+  const mediaRef = useRef();
 
   useEffect(() => {
-    if (videoRef.current && peer.stream) {
-      videoRef.current.srcObject = peer.stream;
+    if (mediaRef.current && peer.stream) {
+      mediaRef.current.srcObject = peer.stream;
     }
   }, [peer.stream]);
 
@@ -146,25 +146,28 @@ function RemoteVideo({ peer, index, callType }) {
     <div className="relative bg-gray-800 rounded-lg overflow-hidden aspect-video">
       {callType === 'video' && peer.isVideoEnabled ? (
         <video
-          ref={videoRef}
+          ref={mediaRef}
           autoPlay
           playsInline
           className="w-full h-full object-cover"
         />
       ) : (
-        <div className="w-full h-full flex items-center justify-center">
-          <div className="w-24 h-24 rounded-full bg-green-500 flex items-center justify-center text-white text-3xl font-bold">
-            {index + 1}
+        <>
+          <div className="w-full h-full flex items-center justify-center">
+            <div className="w-24 h-24 rounded-full bg-green-500 flex items-center justify-center text-white text-3xl font-bold">
+              {index + 1}
+            </div>
           </div>
-          {/* Add audio element for audio calls */}
+          {/* Always render audio element for audio calls */}
           {callType === 'audio' && (
             <audio
-              ref={videoRef}
+              ref={mediaRef}
               autoPlay
               controls={false}
+              style={{ display: 'none' }} // Hide the audio element but let it play
             />
           )}
-        </div>
+        </>
       )}
       <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 px-2 py-1 rounded text-white text-sm">
         Participant {index + 1} {!peer.isVideoEnabled && callType === 'video' && '(Camera Off)'}
