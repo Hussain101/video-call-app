@@ -1,14 +1,24 @@
 'use client';
 
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Suspense, useRef, useEffect } from 'react';
+import { Suspense, useRef, useEffect, useState } from 'react';
 import { useWebRTC } from '@/hooks/useWebRTC';
 import roomService from '@/lib/appwrite';
+
+function ThankYou() {
+  return (
+    <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center text-white">
+      <h1 className="text-3xl font-bold mb-4">Thank you!</h1>
+      <p className="text-lg">Your call has ended.</p>
+    </div>
+  );
+}
 
 function CallComponent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  
+  const [callEnded, setCallEnded] = useState(false);
+
   const callType = searchParams.get('callType') || 'audio';
   const receiverIds = searchParams.getAll('receiverId');
   const roomId = searchParams.get('roomId') || null;
@@ -35,8 +45,9 @@ function CallComponent() {
 
   const handleEndCall = () => {
     endCall();
-    router.back();
+    setCallEnded(true);
   };
+
   const addUser = async () => {
     // Save to Appwrite before joining room
     const meetingUrl = ` ${process.env.NEXT_PUBLIC_HOST}/call?roomId=${roomId}&callType=${callType}`;
@@ -44,10 +55,13 @@ function CallComponent() {
   }
   useEffect(() => {
     if (userId) {
-    addUser();
+      addUser();
     }
-  }, [userId])
+  }, [userId]);
 
+  if (callEnded) {
+    return <ThankYou />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 p-4">
