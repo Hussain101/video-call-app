@@ -14,10 +14,36 @@ function ThankYou() {
   );
 }
 
+function LeavePopup({ onConfirm, onCancel }) {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-8 shadow-lg flex flex-col items-center">
+        <h2 className="text-xl font-bold mb-4 text-gray-900">End Call?</h2>
+        <p className="mb-6 text-gray-700">Are you sure you want to leave the call?</p>
+        <div className="flex gap-4">
+          <button
+            onClick={onConfirm}
+            className="px-6 py-2 rounded bg-red-600 text-white font-semibold hover:bg-red-700"
+          >
+            Yes, End Call
+          </button>
+          <button
+            onClick={onCancel}
+            className="px-6 py-2 rounded bg-gray-300 text-gray-900 font-semibold hover:bg-gray-400"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function CallComponent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [callEnded, setCallEnded] = useState(false);
+  const [showLeavePopup, setShowLeavePopup] = useState(false);
 
   const callType = searchParams.get('callType') || 'audio';
   const receiverIds = searchParams.getAll('receiverId');
@@ -44,8 +70,17 @@ function CallComponent() {
   }, [localStream]);
 
   const handleEndCall = () => {
+    setShowLeavePopup(true);
+  };
+
+  const confirmLeave = () => {
     endCall();
     setCallEnded(true);
+    setShowLeavePopup(false);
+  };
+
+  const cancelLeave = () => {
+    setShowLeavePopup(false);
   };
 
   const addUser = async () => {
@@ -65,6 +100,9 @@ function CallComponent() {
 
   return (
     <div className="min-h-screen bg-gray-900 p-4">
+      {showLeavePopup && (
+        <LeavePopup onConfirm={confirmLeave} onCancel={cancelLeave} />
+      )}
       <div className="max-w-7xl mx-auto">
         <div className="text-white mb-4">
           <h1 className="text-2xl font-bold">
