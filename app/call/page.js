@@ -116,6 +116,11 @@ function CallComponent() {
     }
   }, [userId]);
 
+  useEffect(() => {
+    // Push a new history state so back triggers popstate
+    window.history.pushState({ callActive: true }, '');
+  }, []);
+
   if (callEnded) {
     return <ThankYou />;
   }
