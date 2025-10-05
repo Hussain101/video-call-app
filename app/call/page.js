@@ -17,19 +17,19 @@ function ThankYou() {
 function LeavePopup({ onConfirm, onCancel }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-8 shadow-lg flex flex-col items-center">
+      <div className="bg-white rounded-lg p-8 shadow-lg flex flex-col items-center w-[90vw] max-w-sm">
         <h2 className="text-xl font-bold mb-4 text-gray-900">End Call?</h2>
-        <p className="mb-6 text-gray-700">Are you sure you want to leave the call?</p>
-        <div className="flex gap-4">
+        <p className="mb-6 text-gray-700 text-center">Are you sure you want to leave the call?</p>
+        <div className="flex gap-4 w-full">
           <button
             onClick={onConfirm}
-            className="px-6 py-2 rounded bg-red-600 text-white font-semibold hover:bg-red-700"
+            className="flex-1 px-4 py-2 rounded bg-red-600 text-white font-semibold hover:bg-red-700"
           >
             Yes, End Call
           </button>
           <button
             onClick={onCancel}
-            className="px-6 py-2 rounded bg-gray-300 text-gray-900 font-semibold hover:bg-gray-400"
+            className="flex-1 px-4 py-2 rounded bg-gray-300 text-gray-900 font-semibold hover:bg-gray-400"
           >
             Cancel
           </button>
@@ -69,6 +69,25 @@ function CallComponent() {
     }
   }, [localStream]);
 
+  // Handle mobile back button (Android/iOS)
+  useEffect(() => {
+    const handlePopState = () => {
+      setShowLeavePopup(true);
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  // Prevent accidental navigation away
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
+
   const handleEndCall = () => {
     setShowLeavePopup(true);
   };
@@ -77,14 +96,17 @@ function CallComponent() {
     endCall();
     setCallEnded(true);
     setShowLeavePopup(false);
+    // Optionally, push a new history state so back doesn't trigger again
+    window.history.pushState({}, '');
   };
 
   const cancelLeave = () => {
     setShowLeavePopup(false);
+    // Optionally, push a new history state so back doesn't trigger again
+    window.history.pushState({}, '');
   };
 
   const addUser = async () => {
-    // Save to Appwrite before joining room
     const meetingUrl = ` ${process.env.NEXT_PUBLIC_HOST}/call?roomId=${roomId}&callType=${callType}`;
     await roomService.saveRoomEntry(meetingUrl, roomId, userId, receiverIds, userName);
   }
@@ -99,7 +121,7 @@ function CallComponent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 p-4">
+    <div className="min-h-screen bg-gray-900 p-2 sm:p-4">
       {showLeavePopup && (
         <LeavePopup onConfirm={confirmLeave} onCancel={cancelLeave} />
       )}
@@ -108,18 +130,18 @@ function CallComponent() {
           <h1 className="text-2xl font-bold">
             {receiverIds.length > 1 ? 'Group' : '1-to-1'} {callType === 'video' ? 'Video' : 'Audio'} Call
           </h1>
-          <p className="text-sm text-gray-400">Room: {roomId}</p>
+          <p className="text-sm text-gray-400 break-all">Room: {roomId}</p>
         </div>
 
         {/* Video Grid */}
-        <div className={`grid gap-4 mb-4 ${
+        <div className={`grid gap-2 sm:gap-4 mb-4 ${
           peers.length === 0 ? 'grid-cols-1' :
-          peers.length === 1 ? 'grid-cols-2' :
-          peers.length <= 4 ? 'grid-cols-2' :
-          'grid-cols-3'
+          peers.length === 1 ? 'grid-cols-1 sm:grid-cols-2' :
+          peers.length <= 4 ? 'grid-cols-1 sm:grid-cols-2' :
+          'grid-cols-1 sm:grid-cols-3'
         }`}>
           {/* Local Video */}
-          <div className="relative bg-gray-800 rounded-lg overflow-hidden aspect-video">
+          <div className="relative bg-gray-800 rounded-lg overflow-hidden aspect-video flex items-center justify-center">
             {callType === 'video' ? (
               <video
                 ref={localVideoRef}
@@ -130,12 +152,12 @@ function CallComponent() {
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
-                <div className="w-24 h-24 rounded-full bg-blue-500 flex items-center justify-center text-white text-3xl font-bold">
+                <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-full bg-blue-500 flex items-center justify-center text-white text-2xl sm:text-3xl font-bold">
                   {userName.charAt(0).toUpperCase()}
                 </div>
               </div>
             )}
-            <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 px-2 py-1 rounded text-white text-sm">
+            <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 px-2 py-1 rounded text-white text-xs sm:text-sm">
               You {!isVideoEnabled && callType === 'video' && '(Camera Off)'}
             </div>
             {!isAudioEnabled && (
@@ -152,12 +174,12 @@ function CallComponent() {
         </div>
 
         {/* Controls */}
-        <div className="flex justify-center gap-4">
+        <div className="flex flex-col sm:flex-row justify-center gap-4 mt-2">
           <button
             onClick={toggleAudio}
             className={`p-4 rounded-full ${
               isAudioEnabled ? 'bg-gray-700 hover:bg-gray-600' : 'bg-red-600 hover:bg-red-700'
-            } text-white transition`}
+            } text-white transition flex-1`}
           >
             {isAudioEnabled ? '🎤' : '🔇'}
           </button>
@@ -167,7 +189,7 @@ function CallComponent() {
               onClick={toggleVideo}
               className={`p-4 rounded-full ${
                 isVideoEnabled ? 'bg-gray-700 hover:bg-gray-600' : 'bg-red-600 hover:bg-red-700'
-              } text-white transition`}
+              } text-white transition flex-1`}
             >
               {isVideoEnabled ? '📹' : '📹❌'}
             </button>
@@ -175,7 +197,7 @@ function CallComponent() {
 
           <button
             onClick={handleEndCall}
-            className="p-4 rounded-full bg-red-600 hover:bg-red-700 text-white transition"
+            className="p-4 rounded-full bg-red-600 hover:bg-red-700 text-white transition flex-1"
           >
             ☎️ End Call
           </button>
@@ -199,7 +221,7 @@ function RemoteVideo({ peer, index, callType }) {
   }, [peer.stream, peer.isVideoEnabled, callType]);
 
   return (
-    <div className="relative bg-gray-800 rounded-lg overflow-hidden aspect-video">
+    <div className="relative bg-gray-800 rounded-lg overflow-hidden aspect-video flex items-center justify-center">
       {callType === 'video' && peer.isVideoEnabled ? (
         <video
           ref={videoRef}
@@ -209,7 +231,7 @@ function RemoteVideo({ peer, index, callType }) {
         />
       ) : (
         <div className="w-full h-full flex items-center justify-center">
-          <div className="w-24 h-24 rounded-full bg-green-500 flex items-center justify-center text-white text-3xl font-bold">
+          <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-full bg-green-500 flex items-center justify-center text-white text-2xl sm:text-3xl font-bold">
             {index + 1}
           </div>
         </div>
@@ -221,7 +243,7 @@ function RemoteVideo({ peer, index, callType }) {
         controls={false}
         style={{ display: 'none' }}
       />
-      <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 px-2 py-1 rounded text-white text-sm">
+      <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 px-2 py-1 rounded text-white text-xs sm:text-sm">
         Participant {index + 1} {!peer.isVideoEnabled && callType === 'video' && '(Camera Off)'}
       </div>
       {!peer.isAudioEnabled && (
