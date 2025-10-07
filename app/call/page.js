@@ -122,7 +122,7 @@ function CallComponent() {
     if (userId) {
       addUser();
     }
-  }, [userId]);
+  }, []);
 
   useEffect(() => {
     // Push a new history state so back triggers popstate
