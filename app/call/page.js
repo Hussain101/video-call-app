@@ -113,6 +113,8 @@ function CallComponent() {
   };
 
   const addUser = async () => {
+    if (!userId) return;
+    // Save room entry to Appwrite
     const meetingUrl = ` ${process.env.NEXT_PUBLIC_HOST}/call?roomId=${roomId}&callType=${callType}`;
     await roomService.saveRoomEntry(meetingUrl, roomId, userId, receiverIds, userName);
   }
