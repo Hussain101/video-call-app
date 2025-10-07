@@ -93,11 +93,16 @@ function CallComponent() {
     setShowLeavePopup(true);
   };
 
-  const confirmLeave = () => {
+  // Update status to 'ended' on call leave
+  const confirmLeave = async () => {
+    try {
+      await roomService.updateStatusByCallerId(userId, 'ended');
+    } catch (e) {
+      console.error('Failed to update status:', e);
+    }
     endCall();
     setCallEnded(true);
     setShowLeavePopup(false);
-    // Optionally, push a new history state so back doesn't trigger again
     window.history.pushState({}, '');
   };
 
