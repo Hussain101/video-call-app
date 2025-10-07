@@ -10,6 +10,7 @@ function ThankYou() {
     <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center text-white">
       <h1 className="text-3xl font-bold mb-4">Thank you!</h1>
       <p className="text-lg">Your call has ended.</p>
+      <p className="text-lg">Double-tap the back button to exit</p>
     </div>
   );
 }
@@ -135,7 +136,7 @@ function CallComponent() {
           <h1 className="text-2xl font-bold">
             {receiverIds.length > 1 ? 'Group' : '1-to-1'} {callType === 'video' ? 'Video' : 'Audio'} Call
           </h1>
-          <p className="text-sm text-gray-400 break-all">Room: {roomId}</p>
+          <p className="text-sm text-gray-400 break-all">Room: {userName}</p>
         </div>
 
         {/* Video Grid */}
