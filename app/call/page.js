@@ -96,7 +96,7 @@ function CallComponent() {
   // Update status to 'ended' on call leave
   const confirmLeave = async () => {
     try {
-      await roomService.updateStatusByCallerId(userId, 'ended');
+      await roomService.updateStatusByCallerId(roomId, 'ended');
     } catch (e) {
       console.error('Failed to update status:', e);
     }
@@ -135,7 +135,7 @@ function CallComponent() {
     if (peers.length === 0 && !callEnded) {
       timeoutId = setTimeout(async () => {
         try {
-          await roomService.updateStatusByCallerId(userId, 'ended');
+          await roomService.updateStatusByCallerId(roomId, 'ended');
         } catch (e) {
           console.error('Failed to update status:', e);
         }
