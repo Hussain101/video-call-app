@@ -129,6 +129,26 @@ function CallComponent() {
     window.history.pushState({ callActive: true }, '');
   }, []);
 
+  useEffect(() => {
+    let timeoutId;
+    // If only one person (yourself) in the room, start a 30s timer
+    if (peers.length === 0 && !callEnded) {
+      timeoutId = setTimeout(async () => {
+        try {
+          await roomService.updateStatusByCallerId(userId, 'ended');
+        } catch (e) {
+          console.error('Failed to update status:', e);
+        }
+        endCall();
+        setCallEnded(true);
+        setShowLeavePopup(false);
+        window.history.pushState({}, '');
+      }, 30000); // 30 seconds
+    }
+    // If someone joins, clear the timer
+    return () => clearTimeout(timeoutId);
+  }, [peers.length, callEnded, endCall, userId]);
+
   if (callEnded) {
     return <ThankYou />;
   }
